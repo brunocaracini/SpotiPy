@@ -50,7 +50,7 @@ class DatosUser(object):
             return 'ok'
 
 
-    def buscarUri(self, email):
+    def buscarURI(self, email):
         return self.session.query(User).filter_by(emailUsuario=email).first().uriUsuario
 
 
