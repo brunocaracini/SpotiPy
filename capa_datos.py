@@ -50,6 +50,11 @@ class DatosUser(object):
             return 'ok'
 
 
+    def buscarUri(self, email):
+        return self.session.query(User).filter_by(emailUsuario=email).first().uriUsuario
+
+
+
     def actualizarUsuario(self, id, email, nombre, psw, uri):
         self.session.query(User).filter_by(idUsuario=id).update({User.emailUsuario:email, User.nombreUsuario:nombre, User.passwordUsuario:psw, User.uriUsuario:uri})
         self.session.commit()

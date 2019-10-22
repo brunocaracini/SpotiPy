@@ -29,11 +29,13 @@ class NegocioUser(object):
 
 
     def jsonDataReturn(self, usuario, password, estado, uri, nombre, accion):
+
         if accion == 'login':
             user_data={
                 'usuario': usuario,
                 'password': password,
-                'estado': estado
+                'estado': estado,
+                'uri': self.buscarURI(usuario)
             }
             with open('user_data.txt', 'w') as outfile:
                 json.dump(user_data, outfile)
@@ -49,6 +51,10 @@ class NegocioUser(object):
 
         with open('user_data_signup.txt', 'w') as outfile:
                 json.dump(user_data_signup, outfile)
+
+
+    def buscarURI(self, email):
+        return self.datos.buscarURI(email)
 
 
     def buscarUsuario(self, email, uri):
