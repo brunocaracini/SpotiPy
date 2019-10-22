@@ -4,8 +4,8 @@ import json
 
 class NegocioUser(object):
 
-    MIN_CAR_PSW = 5
-    MAX_CAR_PSW = 10
+    MIN_CAR_PSW = 8
+    MAX_CAR_PSW = 20
 
     def __init__(self):
         self.datos = DatosUser()
@@ -50,11 +50,12 @@ class NegocioUser(object):
         with open('user_data_signup.txt', 'w') as outfile:
                 json.dump(user_data_signup, outfile)
 
-    def buscarUsuario(self, id):
-        return self.datos.buscarUsuario(id)
+
+    def buscarUsuario(self, email, uri):
+        return self.datos.buscarUsuario(email, uri)
 
 
-    def validarUsuario(self, email, psw):
+    def validarUsuarioLogin(self, email, psw):
         '''Devuelve la instancia del usuario, dado su email y contraseña.
         Retorna None si no lo encuentra, True si pasa el login y False si la contraseña es incorrecta'''
 
@@ -62,21 +63,22 @@ class NegocioUser(object):
 
 
     def altaUsuario(self, email, nombre, psw, uri):
-        '''Da de alta un usuario, se debe validar que el usuario no exista (reglaValidacionUsuario),
+        '''Da de alta un usuario, se debe validar que el usuario no exista (reglaValidacionLogin),
         que la contraseña pase el min y max de caracteres (reglaLongitudContrasenia) y
         además que el email sea una dirección valida (reglaValidacionEmail).
         Retorna True si el alta fue exitoso, y se deben levantar excepciones por validaciones no pasadas'''
 
-
-        if (self.reglaValidacionUsuario(email, psw) == True):
-            return 'Este usuario ya existe' 
-        elif (self.reglaLongitudContrasenia(psw) == False):
-            return 'Longitud de contraseña incorrecta'
-        elif (self.reglaValidacionEmail(email) == False):
-            return 'Error - Solo se aceptan Gmail o Hotmail'
+        if self.buscarUsuario(email, uri) == 'ok':
+            if self.reglaLongitudContrasenia(psw) == False:
+                return 'Longitud de contraseña invalida'
+            elif self.reglaValidacionEmail(email) == False:
+                    return 'Solo se aceptan Gmail o Hotmail'
+            else:
+                return self.datos.agregarUsuario(email, nombre, psw, uri)
         else:
-            self.datos.agregarUsuario(email, nombre, psw, uri)
-            return 'ok'
+            return self.buscarUsuario(email, uri)
+
+
 
     def modificacion(self, id, email, nombre, psw, uri):
         '''Modifica un usuario. Se debe validar que el usuario exista primero.
@@ -88,10 +90,16 @@ class NegocioUser(object):
             return self.datos.actualizarUsuario(id, email, nombre, psw, uri)
 
 
-    def reglaValidacionUsuario(self, email, psw):
+    def reglaValidacionSignUp(self, email, uri):
+        '''Validar que el usuario no existe previamente antes del registro y que la URI no sea duplicada'''
+        return self.buscarUsuario(email, uri)
+
+
+
+
+    def reglaValidacionLogin(self, email, psw):
         '''Validar que el usuario exista para el login mediante email y contraseña.
-        Retorna un boolean según la condición correspondiente.
-        OJO AGREGAR RAISE EXCEPTION CORRESPONDIENTE'''
+        Retorna un error en caso de no pasar la validación.'''
 
         us = self.validarUsuario(email, psw)
 
@@ -112,7 +120,7 @@ class NegocioUser(object):
         if (len(psw) >= self.MIN_CAR_PSW) and (len(psw) <= self.MAX_CAR_PSW):
             return True
         else:
-            return False #(usar Raise LongContraseñaInvalida)
+            return False
 
 
     def reglaValidacionEmail(self, email):
@@ -123,5 +131,5 @@ class NegocioUser(object):
         if (email.find('@gmail.com') != -1) or (email.find('@hotmail.com') != -1):
             return True
         else:
-            return False #Este es falso porque el email no tiene dominio valido (usar Raise EmailInvalido)
+            return False
 

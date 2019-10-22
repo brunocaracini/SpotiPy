@@ -10,7 +10,7 @@ class User(Base):
 
     __tablename__ = 'user'
     idUsuario = Column(INTEGER, primary_key=True, autoincrement=True)
-    usuario = Column(VARCHAR(30), unique=True, nullable=False)
+    emailUsuario = Column(VARCHAR(30), unique=True, nullable=False)
     nombreUsuario = Column(VARCHAR(50))
     passwordUsuario = Column(VARCHAR(10), nullable=False)
     uriUsuario = Column(VARCHAR(30), unique=True, nullable=False)

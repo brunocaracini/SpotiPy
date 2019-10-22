@@ -14,22 +14,21 @@ class DatosUser(object):
         DBSession.bind = engine
         self.session = DBSession()
 
-    def agregarUsuario(self, usuario, nombre, psw, uri):
+    def agregarUsuario(self, email, nombre, psw, uri):
 
         us = User()
-        us.usuario = usuario
+        us.emailUsuario = email
         us.nombreUsuario = nombre
         us.passwordUsuario = psw
         us.uriUsuario = uri
         self.session.add(us)
         self.session.commit()
-        return True
-    '''En el return de arriba, no sabiamos que datos querías devolver, 
-        te puse que retorne la primary key de la tabla pero podes devolver us (que es la instancia us)'''
+        return 'ok'
 
-    def validarUsuario(self, usuario, psw):
 
-        user = self.session.query(User).filter_by(usuario=usuario).first()
+    def validarUsuario(self, email, psw):
+
+        user = self.session.query(User).filter_by(emailUsuario=email).first()
 
         if user is None:
             return 'Usuario inexistente'
@@ -40,16 +39,19 @@ class DatosUser(object):
             return 'Contraseña incorrecta'
 
 
-    def buscarUsuario(self, id):
-        user = self.session.query(User).filter_by(idUsuario=id).first()
-        if user is None:
-            return False
-        else:
-            return user
+    def buscarUsuario(self, email, uri):
+        us_email = self.session.query(User).filter_by(emailUsuario=email).first()
+        us_uri = self.session.query(User).filter_by(uriUsuario=uri).first()
+        if us_email is not None:
+            return 'Existe un usuario registrado con ese email'
+        elif us_uri is not None:
+            return 'Existe un usuario registrado con esa uri'
+        elif us_email is None and us_uri is None:
+            return 'ok'
 
 
-    def actualizarUsuario(self, id, usuario, nombre, psw, uri):
-        self.session.query(User).filter_by(idUsuario=id).update({User.usuario:usuario, User.nombreUsuario:nombre, User.passwordUsuario:psw, User.uriUsuario:uri})
+    def actualizarUsuario(self, id, email, nombre, psw, uri):
+        self.session.query(User).filter_by(idUsuario=id).update({User.emailUsuario:email, User.nombreUsuario:nombre, User.passwordUsuario:psw, User.uriUsuario:uri})
         self.session.commit()
         return True
 

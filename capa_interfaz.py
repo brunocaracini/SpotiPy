@@ -2,7 +2,11 @@ from capa_negocio import NegocioUser
 import os
 import sys
 
-accion = sys.argv[1]
+#accion = sys.argv[1]
+accion = 'signup'
+
+
+
 
 if accion == 'login':
     usuario, password = NegocioUser().jsonDataOpen(accion)
