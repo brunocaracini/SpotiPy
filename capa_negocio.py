@@ -34,8 +34,7 @@ class NegocioUser(object):
             user_data={
                 'usuario': usuario,
                 'password': password,
-                'estado': estado,
-                'uri': self.buscarURI(usuario)
+                'estado': estado
             }
             with open('user_data.txt', 'w') as outfile:
                 json.dump(user_data, outfile)
@@ -103,8 +102,7 @@ class NegocioUser(object):
         OJO AGREGAR RAISE EXCEPTION CORRESPONDIENTE'''
 
         if (email.find('@gmail.com') != -1) or (email.find('@hotmail.com') != -1):
-            pos = email.find('@')
-            if (pos < 3) and (len(email) > 30):
+             if email.find('@') < 3 or len(email) > 30:
                 return False
             else:
                 return True
