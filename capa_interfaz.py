@@ -2,15 +2,12 @@ from capa_negocio import NegocioUser
 import os
 import sys
 
-#accion = sys.argv[1]
-accion = 'signup'
-
-
+accion = sys.argv[1]
 
 
 if accion == 'login':
     usuario, password = NegocioUser().jsonDataOpen(accion)
-    estado = NegocioUser().validarUsuario(usuario, password)
+    estado = NegocioUser().validarUsuarioLogin(usuario, password)
     NegocioUser().jsonDataReturn(usuario, password, estado, None, None, accion)
 
 elif accion == 'signup':

@@ -80,38 +80,6 @@ class NegocioUser(object):
 
 
 
-    def modificacion(self, id, email, nombre, psw, uri):
-        '''Modifica un usuario. Se debe validar que el usuario exista primero.
-        Retorna True si la modificación fue exitosa y se debe levantar excepción si no pasa la validación.'''
-        us  = self.buscarUsuario(id)
-        if  us == False:
-            return False
-        else:
-            return self.datos.actualizarUsuario(id, email, nombre, psw, uri)
-
-
-    def reglaValidacionSignUp(self, email, uri):
-        '''Validar que el usuario no existe previamente antes del registro y que la URI no sea duplicada'''
-        return self.buscarUsuario(email, uri)
-
-
-
-
-    def reglaValidacionLogin(self, email, psw):
-        '''Validar que el usuario exista para el login mediante email y contraseña.
-        Retorna un error en caso de no pasar la validación.'''
-
-        us = self.validarUsuario(email, psw)
-
-        if us is None:
-            return False #Este falso es porque usuario no existe hay que registrarse (usar Raise UsuarioInexistente)
-
-        if us == True:
-            return True #Este retorna que existe, pasa el login
-        else:
-            return False #Este falso es porque la contraseña es incorrecta (usar Raise ContraseniaInvalida)
-
-
     def reglaLongitudContrasenia(self, psw):
         '''Validar que la contraseña tenga una longitud entre los valores MIN_CAR_PSW y MAX_CAR_PSW.
         Retorna un boolean según la condición correspondiente.
@@ -129,7 +97,11 @@ class NegocioUser(object):
         OJO AGREGAR RAISE EXCEPTION CORRESPONDIENTE'''
 
         if (email.find('@gmail.com') != -1) or (email.find('@hotmail.com') != -1):
-            return True
+            pos = email.find('@')
+            if (pos < 3) and (len(email) > 30):
+                return False
+            else:
+                return True
         else:
             return False
 
