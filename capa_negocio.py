@@ -27,6 +27,11 @@ class NegocioUser(object):
             nombre = user_data_signup['nombre']
             return usuario, password, uri, nombre
 
+        elif accion == 'geturi':
+            with open('user_uri.txt') as json_file:
+                user_uri = json.load(json_file)
+            usuario = user_uri['usuario']
+            return usuario
 
     def jsonDataReturn(self, usuario, password, estado, uri, nombre, accion):
 
@@ -47,10 +52,16 @@ class NegocioUser(object):
             'uri': uri,
             'nombre': nombre
             }
-
-        with open('user_data_signup.txt', 'w') as outfile:
+            with open('user_data_signup.txt', 'w') as outfile:
                 json.dump(user_data_signup, outfile)
-
+        
+        if accion == 'geturi':
+            user_uri = {
+                'usuario': usuario,
+                'uri':uri
+            }
+        with open('user_uri.txt', 'w') as outfile:
+                json.dump(user_uri, outfile)
 
     def buscarURI(self, email):
         return self.datos.buscarURI(email)
@@ -76,8 +87,8 @@ class NegocioUser(object):
         if self.buscarUsuario(email, uri) == 'ok':
             if self.reglaLongitudContrasenia(psw) == False:
                 return 'Longitud de contraseña invalida'
-            elif self.reglaValidacionEmail(email) == False:
-                    return 'Solo se aceptan Gmail o Hotmail'
+            elif self.reglaValidacionEmail(email) != True:
+                    return self.reglaValidacionEmail(email)
             else:
                 return self.datos.agregarUsuario(email, nombre, psw, uri)
         else:
@@ -102,10 +113,12 @@ class NegocioUser(object):
         OJO AGREGAR RAISE EXCEPTION CORRESPONDIENTE'''
 
         if (email.find('@gmail.com') != -1) or (email.find('@hotmail.com') != -1):
-             if email.find('@') < 3 or len(email) > 30:
-                return False
+            if ((email.find('@') < 3) or (len(email) > 30)):
+                return 'Longitud invalida o faltan caracteres delante del dominio'
             else:
                 return True
         else:
-            return False
+            return 'Solo se aceptan dominios Gmail o Hotmail'
+
+
 

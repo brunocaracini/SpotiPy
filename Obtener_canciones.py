@@ -12,8 +12,13 @@ import tkinter as tk
 
 
 #Get the username from terminal
-username = 'nazarenaa.a'
+username = sys.argv[1]
 scope = 'user-read-private user-read-playback-state user-modify-playback-state'
+
+
+prueba = username
+with open('prueba.txt', 'w') as outfile:
+    json.dump(prueba, outfile)
 
 # Erase cache and prompt for user permission
 try:
@@ -27,6 +32,7 @@ except (AttributeError, JSONDecodeError):
 sp= spotipy.Spotify(auth=token)
 tracks_name = []
 tracks_artist = []
+playlists_name = []
 
 # Main Program
 def show_tracks(tracks):
@@ -42,6 +48,7 @@ for playlist in playlists['items']:
         if playlist['owner']['id'] == username:
             print()
             print(playlist['name'])
+            playlists_name.append(playlist['name'])
             print('  total tracks', playlist['tracks']['total'])
             results = sp.user_playlist(username, playlist['id'],
             fields="tracks,next")
@@ -63,3 +70,9 @@ for i in range(0,len(tracks_name)):
 
 with open('data.txt', 'w') as outfile:
     json.dump(data, outfile)
+
+
+user_playlists = playlists_name
+
+with open('user_playlists.txt', 'w') as outfile:
+    json.dump(user_playlists, outfile)

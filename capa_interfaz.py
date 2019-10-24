@@ -15,4 +15,7 @@ elif accion == 'signup':
     estado = NegocioUser().altaUsuario(usuario, nombre, password, uri)
     NegocioUser().jsonDataReturn(usuario, password, estado, uri, nombre, accion)
 
-
+elif accion == 'geturi':
+    usuario = NegocioUser().jsonDataOpen(accion)
+    uri = NegocioUser().buscarURI(usuario)
+    NegocioUser().jsonDataReturn(usuario, None, None, uri, None, accion)
