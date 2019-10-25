@@ -4,6 +4,13 @@ import sys
 
 accion = sys.argv[1]
 
+'''accion = 'signup'
+usuario = 'bruno@gmail.com'
+password = 'holachau'
+uri = 'bruno98980'
+nombre = 'Mario Ernesto' '''
+
+
 
 if accion == 'login':
     usuario, password = NegocioUser().jsonDataOpen(accion)
@@ -18,4 +25,5 @@ elif accion == 'signup':
 elif accion == 'geturi':
     usuario = NegocioUser().jsonDataOpen(accion)
     uri = NegocioUser().buscarURI(usuario)
-    NegocioUser().jsonDataReturn(usuario, None, None, uri, None, accion)
+    nombre = NegocioUser().buscarNombre(usuario)
+    NegocioUser().jsonDataReturn(usuario, None, None, uri, nombre, accion)

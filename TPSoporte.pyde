@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import math
+import re
 
 op = 0
 scroll = 0
@@ -10,6 +11,7 @@ usuario = ''
 password = ''
 password2 = ''
 uri = ''
+nombre = ''
 sp_user = False
 user = False
 passw = False
@@ -29,6 +31,9 @@ plsel = ''
 ingresapl = False
 ingresapl2 = False
 len_data = 0
+playlist = []
+youtube = True
+
 
 
 
@@ -43,9 +48,9 @@ class Presentacion():
         image(back, 0, 0)
         
         #Cartel Iniciar Sesion o Registrese
-        textSize(40)
-        fill(90)
-        text('Inicie Sesion', 550 , 200)
+        textSize(50)
+        fill(250, 230)
+        text('Inicie Sesion', 522 , 290)
         
         #Recuadro ingreso usuario
         noStroke()
@@ -100,9 +105,9 @@ class Presentacion():
         image(back, 0, 0)
         
         #Cartel Registrese
-        textSize(40)
-        fill(90)
-        text('Registrese', 550 , 100)
+        textSize(50)
+        fill(250, 240)
+        text('Registrese', 545 , 130)
         
         #Recuadro ingreso usuario
         noStroke()
@@ -170,8 +175,17 @@ class Presentacion():
         image(back, 0, 0)
         
         #Barra Lateral del menu
-        fill(50, 200)
+        fill(40)
         rect(0,0,350,height)
+        
+        #Texto menu lateral
+        fill(240,230)
+        textSize(25)
+  
+        text(nombre, 140, 110)
+        tint(255,180)
+        photo = loadImage("usermenu_icon.png")
+        image(photo, 20, 50)
         
         #Opcion 1: Mostrar tracks de una playlist en Spotify
         if op1:
@@ -196,8 +210,8 @@ class Presentacion():
         photo = loadImage("videoSearch_icon.png")
         image(photo, 613, 263)
         textSize(23)
-        text("Match videos", 587, 388)
-        text("with playlists", 588, 418)
+        text("Buscar videos", 587, 388)
+        text("desde playlist", 585, 418)
         
         #Opcion 3: Buscar video Lyrics desde una Playlist
         if op3:
@@ -209,8 +223,21 @@ class Presentacion():
         photo = loadImage("videoSearch_icon.png")
         image(photo, 613, 490)
         textSize(23)
-        text("Lyrics videos", 587, 615)
-        text("from playlists", 582, 645)
+        text("Video Lyric", 598, 615)
+        text("desde playlist", 582, 645)
+        
+        #Opcion 4: Buscar Canales de Artistas de mis Playlist
+        if op4:
+            tint(117,231,193, 170)
+            fill(117,231,193, 170)
+        else:
+            tint(255,180)
+            fill(255,180)
+        photo = loadImage("channel_icon.png")
+        image(photo, 1011, 263)
+        textSize(23)
+        text("Buscar Canales", 973, 388)
+        text("de artistas", 998, 418)
         
         #Opcion 6: Configuracion
         photo = loadImage("settings_icon.png")
@@ -234,6 +261,11 @@ class Presentacion():
         image(back, 0, 0)
         with open('user_playlists.txt') as json_file:
             user_playlists = json.load(json_file)
+        
+        #Botón de atrás
+        image(back_button, 75 , height/2)
+        tint(255, 230)
+    
         
         #Rectangulo negro de fondo
         noStroke()
@@ -274,41 +306,94 @@ class Presentacion():
         text('Buscar', 520, 227 + scroll)
         fill(117,231,193)
         text(plsel, 460, 227)
+        
+        #Error window
+        if error_window:
+          self.error_window_form()  
 
         
-        
-        
-    
     
     def showTracks(self):
         image(back, 0, 0)
         with open('data.txt') as json_file:
             data = json.load(json_file)
         
+        #Botón de atrás
+        image(back_button, 75 , height/2)
+        tint(255, 230)
+        
+        #Rectángulo Título de Playlist:
+        noStroke()
+        fill(40)
+        rect(200,120 + scroll, width - 400, 100, 20)
+        textSize(50)
+        fill (220, 230)
+        text("Playlist: " + playlist_name, 310, 185 + scroll)
+        
+        
         #Rectangulo negro de fondo
         noStroke()
         fill(40)
-        rect(200,250 + scroll, width - 400, len(data['tracks'])*50 + 75, 20)
+        rect(200,250 + scroll, width - 400, len(playlist)*50 + 75, 20)
         
         #Imprimir playlists
         vposition = 300
         hposition = 350
-        len_data = len(data)
         i = 0
         fill(255)
-        text(mouseY, 100, 200 - scroll)
-        for track in data['tracks']:
+        for track in playlist:
             vposition +=50
             stroke(70, 240)
             line(220, vposition + 17 + scroll, width - 240, vposition + 15 + scroll)
-            fill (220, 230)
+            fill (220, 230)                
             textSize(18)
             text(str(i + 1) + ".", hposition - 40, vposition + scroll)
             text(track['name'][0:40], hposition, vposition + scroll)
             text(track['artist'][0:50], hposition + 400, vposition + scroll)
-            image(youtube_icon, hposition + 680, vposition - 21 + scroll)
+            if op == 2 or op == 3:
+                image(youtube_icon, hposition + 680, vposition - 21 + scroll)                
             i+=1
     
+    
+    def showArtists(self):
+        image(back, 0, 0)
+        with open('data.txt') as json_file:
+            data = json.load(json_file)
+        
+        #Botón de atrás
+        image(back_button, 75 , height/2)
+        tint(255, 230)
+        
+        #Rectángulo Título de Playlist:
+        noStroke()
+        fill(40)
+        rect(200,120 + scroll, width - 400, 100, 20)
+        textSize(50)
+        fill (220, 230)
+        text("Artistas: " , 310, 185 + scroll)
+        
+        
+        #Rectangulo negro de fondo
+        noStroke()
+        fill(40)
+        rect(200,250 + scroll, width - 400, len(artistas)*50 + 75, 20)
+        
+        #Imprimir playlists
+        vposition = 300
+        hposition = 350
+        i = 0
+        fill(255)
+        for artist in artistas:
+            vposition +=50
+            stroke(70, 240)
+            line(220, vposition + 17 + scroll, width - 240, vposition + 15 + scroll)
+            fill (220, 230)                
+            textSize(18)
+            text(str(i + 1) + ".", hposition - 40, vposition + scroll)
+            text(artist[0:40], hposition, vposition + scroll)
+            if op == 2 or op == 3 or op == 4:
+                image(youtube_icon, hposition + 680, vposition - 21 + scroll)                
+            i+=1
     
     def error_window_form(self):
         global error
@@ -340,27 +425,6 @@ class Presentacion():
         fill(240, 240)
         text("Error: " + error, 565, 430)
         
-    
-    
-    def show_scroll_bar(self, data):
-        fill (190)
-        stroke (190)
-        len_data = self.calcula_largo(data)
-        rect (width - 20, 0 - scroll*len_data/(height), 10, (height + 5000)/len_data)
-
-
-    def calcula_largo(self, data):
-        len_data = 0
-        for track in data['tracks']:
-            len_data +=1
-        print(len_data)
-        return len_data
-        
-    
-    def header(self):
-        fill (45)
-        stroke (45)
-        rect(0,0+ scroll,width - 20,170)
 
 
 
@@ -446,10 +510,11 @@ def printText():
 def setup():
     global back
     global youtube_icon
+    global back_button
     size (1365, 700)
     
     youtube_icon = loadImage("youtube_icon.png")
-    
+    back_button = loadImage("back_icon.png")
     back = loadImage("fondo2.jpg")
     image(back, 0, 0)
 
@@ -458,12 +523,14 @@ def setup():
     
 def mouseWheel(event):
     global scroll
-    e = event.getCount()
-    if scroll == 0:
-        if event.getCount() >=0:
+    if estado == 5 or estado == 4 or estado == 6 or estado == 7:
+        if scroll == 0:
+            if event.getCount() >=0:
+                scroll -= event.getCount() * 50
+        else:
             scroll -= event.getCount() * 50
-    else:
-        scroll -= event.getCount() * 50
+    
+
 
 
 def keyPressed():
@@ -539,6 +606,8 @@ def mousePressed():
     global uri
     global ingresapl
     global op
+    global scroll
+    global youtube
     
     if estado == 0:
         #Resalta borde ingreso usuario
@@ -557,13 +626,14 @@ def mousePressed():
             
         #Ejecuta .py de validacion del login y cambia estado a 2 (Menu de opciones)
         elif mouseX >= 600 and mouseX <=750 and mouseY >=590 and mouseY <= 640 and len(usuario) > 0 and len(password) > 0:
-            estado = 2
-            '''printText()
+            #estado = 2
+            printText()
             exporta_json()
             if importa_json():
                 estado = 2
                 exporta_json()
-                importa_json()'''
+                importa_json()
+                os.system("Python Obtener_canciones.py {0}".format(uri))
         
         #Cambia estado a Registrarse
         elif mouseX>= 470 and mouseX<= 835 and mouseY>= 545 and mouseY <= 579:
@@ -620,50 +690,111 @@ def mousePressed():
     elif estado == 2:
         #Seleccion de opcion 1 (Buscar Playlists en Spotify)
         if (mouseX>= 600.5 and mouseX<= 700.5 and mouseY>= 25 and mouseY <= 125) or (mouseX>= 607 and mouseX<= 700 and mouseY>= 130 and mouseY <= 200):
-            os.system("Python Obtener_canciones.py {0}".format(uri))
+            #os.system("Python Obtener_canciones.py {0}".format(uri))
             op = 1
             estado = 3
         
-        #Seleccion de opcion 2 (Buscar videos para una playlist
+        #Seleccion de opcion 2 (Buscar videos para una Playlist)
         if (mouseX>= 600.5 and mouseX<= 700.5 and mouseY>= 263 and mouseY <= 348) or (mouseX>= 590 and mouseX<= 740 and mouseY>= 368 and mouseY <= 438):
-            os.system("Python Obtener_canciones.py {0}".format(uri))
+            #os.system("Python Obtener_canciones.py {0}".format(uri))
             op = 2
             estado = 3
         
         #Seleccion opcion opcion 3 (Buscar video Lyrics para una Playlist)
         if (mouseX>= 600.5 and mouseX<= 700.5 and mouseY>= 470 and mouseY <= 563) or (mouseX>= 590 and mouseX<= 740 and mouseY>= 572 and mouseY <= 655):
-           os.system("Python Obtener_canciones.py {0}".format(uri))
+           #os.system("Python Obtener_canciones.py {0}".format(uri))
            op = 3
            estado = 3
     
+        #Selección opción 4 (Buscar canales para los artistas de mis playlist)
+        if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 263 and mouseY <= 348) or (mouseX>= 970 and mouseX<= 1140 and mouseY>= 368 and mouseY <= 438):
+            obtener_artistas()
+            op = 4
+            estado = 7
+    
     elif estado == 3:
+        
+        #Selección botón atrás
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= 372.5 and mouseY <= 452.5:
+            estado = 2
+
         #seleccion ingreso numero playlist
         if (mouseX>= 200 and mouseX<= 550 and mouseY>= 200 and mouseY <= 250):
             ingresapl = True
         
         #Seleccion busqueda (cambia estado en base a estado anterior)
-        if (mouseX>= 510 and mouseX<= 600 and mouseY>= 200 and mouseY <= 250):
-            if op == 1:
-                pass
-            elif op == 2:
-                estado = 4
-            elif op == 3:
-                estado = 5
+        if (mouseX>= 510 and mouseX<= 600 and mouseY>= 200 and mouseY <= 250):    
+            if busca_index():
+                obtener_playlist()
+                if op == 1:
+                    estado = 6
+                elif op == 2:
+                    estado = 4
+                elif op == 3:
+                    estado = 5
+
+    
     
     elif estado == 4:
-        numero = math.ceil((mouseY - scroll + 340)/50) - 13
-        with open('data.txt') as json_file:
-            data = json.load(json_file)
-        arg = data['tracks'][int(numero)]['name'] + " " + data['tracks'][int(numero)]['artist']
-        os.system("Python busqueda_videos.py {0}".format(arg))
-    
+        
+        #Ejecuta busqueda video
+        if mouseX>=1025 and mouseX<=1075:
+            with open('data.txt') as json_file:
+                data = json.load(json_file)   
+            numero = math.ceil((mouseY - scroll + 340)/50) - 13        
+            arg = playlist[int(numero)]['name'] + " " +  playlist[int(numero)]['artist']
+            arg = re.sub('[^a-zA-Z.\d\s]', '', arg)  
+            with open('song.txt', 'w') as outfile:
+                json.dump(arg, outfile)
+            os.system("Python busqueda_videos.py")
+        
+        #Cambia estado a 3 (vuelve hacia atrás)
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
+            estado = 3
+            scroll = 0
+        
 
     elif estado == 5:
-        numero = math.ceil((mouseY - scroll + 340)/50) - 13
-        with open('data.txt') as json_file:
-            data = json.load(json_file)
-        arg = "Lyrics " + data['tracks'][int(numero)]['name'] + " " + data['tracks'][int(numero)]['artist']
-        os.system("Python busqueda_videos.py {0}".format(arg))
+        
+        #Ejecuta busqueda video
+        if mouseX>=1025 and mouseX<=1075:
+            with open('data.txt') as json_file:
+                data = json.load(json_file)  
+            numero = math.ceil((mouseY - scroll + 340)/50) - 13        
+            arg = "Lyrics video " + playlist[int(numero)]['name'] + " " + playlist[int(numero)]['artist']
+            arg = re.sub('[^a-zA-Z.\d\s]', '', arg)
+            arg = re.sub('Remastered', '', arg)  
+            with open('song.txt', 'w') as outfile:
+                json.dump(arg, outfile)
+            os.system("Python busqueda_videos.py")
+        
+        #Cambia estado a 3 (vuelve hacia atrás)
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
+            estado = 3
+            scroll = 0
+            
+    elif estado == 6:
+        
+        #Cambia estado a 3 (vuelve hacia atrás)
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
+            estado = 3
+            scroll = 0
+    
+    elif estado == 7:
+        if mouseX>=1025 and mouseX<=1075:
+            with open('data.txt') as json_file:
+                data = json.load(json_file)  
+            numero = math.ceil((mouseY - scroll + 340)/50) - 13        
+            arg = artistas[int(numero)]
+            arg = re.sub('[^a-zA-Z.\d\s]', '', arg)
+            with open('channel.txt', 'w') as outfile:
+                json.dump(arg, outfile)
+            os.system("Python busqueda_canales.py")
+        
+        #Cambia estado a 3 (vuelve hacia atrás)
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
+            estado = 2
+            scroll = 0
     
     if error_window:
         if (mouseX>= 570 and mouseX<= 770 and  mouseY>= 447 and mouseY<= 467):
@@ -675,6 +806,7 @@ def importa_json():
     global error
     global error_window
     global uri
+    global nombre
 
     if estado == 0:
         with open('user_data.txt') as json_file:
@@ -692,6 +824,7 @@ def importa_json():
         with open('user_uri.txt') as json_file:
             user_uri = json.load(json_file)
         uri = user_uri['uri']
+        nombre = user_uri['nombre']
         os.system("DEL user_uri.txt")
 
     if error == 'ok':
@@ -722,9 +855,9 @@ def exporta_json():
         user_data_signup = {  
                 'usuario': usuario,
                 'password': password,
-                'uri': uri,
+                'uri' : uri,
                 'estado': '',
-                'nombre': "Mario Ernesto"
+                'nombre': 'Mario Ernesto'
                 }     
         with open('user_data_signup.txt', 'w') as outfile:
             json.dump(user_data_signup, outfile)
@@ -733,7 +866,8 @@ def exporta_json():
     elif estado == 2:
         user_uri = {
             'usuario': usuario,
-            'uri': ''
+            'uri': '',
+            'nombre':''
             }
         with open('user_uri.txt', 'w') as outfile:
             json.dump(user_uri, outfile)
@@ -765,12 +899,19 @@ def checkMousePosition():
             printText()
             
         #Cambia color boton log_in o registrarse
-        if mouseX >= 600 and mouseX <=750 and mouseY >=600 and mouseY <= 640:
+        if mouseX >= 600 and mouseX <=750 and mouseY >=600 and mouseY <= 640 and len(password)>=1 and len(usuario)>=1:
             log_in = True
             printText()
         elif estado == 0:
             log_in = False
             printText()
+        
+        if sign_up or log_in:
+            cursor(HAND)
+        else:
+            cursor(ARROW)
+        
+            
             
     if estado == 1:
         #Cambia color del cartel de cambio de estado
@@ -788,6 +929,11 @@ def checkMousePosition():
         elif estado == 1:
             sign_up = False
             printText()
+            
+        if sign_up or log_in:
+            cursor(HAND)
+        else:
+            cursor(ARROW)
         
     if estado == 2:
         
@@ -804,34 +950,63 @@ def checkMousePosition():
             op2 = False
 
         
-        
         #Cambia color opcion 3 (Buscar video Lyrics para una Playlist)
         if (mouseX>= 600.5 and mouseX<= 700.5 and mouseY>= 470 and mouseY <= 563) or (mouseX>= 590 and mouseX<= 740 and mouseY>= 572 and mouseY <= 655):
             op3 = True
         elif estado == 2:
             op3 = False
         
+        #Cambia color opción 4 (Buscar canales de los artistas de una playlist)
+        if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 263 and mouseY <= 348) or (mouseX>= 970 and mouseX<= 1140 and mouseY>= 368 and mouseY <= 438):
+            op4 = True
+        elif estado == 2:
+            op4 = False
         
         #Cambia color opcion 6 (Configuración)
         if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 470 and mouseY <= 563) or (mouseX>= 993 and mouseX<= 1120 and mouseY>= 572 and mouseY <= 620):
             op6 = True
         elif estado == 2:
             op6 = False
+            
+        #Cambia cursor de una flecha a una mano
+        if op1 or op2 or op3 or op4 or op5 or op6:
+            cursor(HAND)
+        else:
+            cursor(ARROW)
 
     if estado == 3:
         
-        #Cambia color boton de busqueda 
+        #Cambia color boton de busqueda  y cursor sobre ese botón
         if mouseX>= 510 and mouseX<= 600 and mouseY>= 200 and mouseY <= 245:
             ingresapl2 = True
+            cursor(HAND)
+        #Cambia cursor sobre el botón de atrás
+        elif mouseX>= 75 and mouseX<= 145 and mouseY>= 372.5 and mouseY <= 452.5:
+            cursor(HAND)
+        #Cambia cursor sobre el recuadro de ingreso de playlist
+        elif (mouseX>= 200 and mouseX<= 550 and mouseY>= 200 and mouseY <= 250):
+            cursor(HAND)
+        #Devuelve el cursor a una flecha
         elif estado == 3:
             ingresapl2 = False
+            cursor(ARROW)
+        
             
+    if estado == 4 or estado == 5 or estado == 7:
+        
+        #Cambia cursor en icono youtube y botón de atrás
+        if mouseX>=1025 and mouseX<=1075:
+            cursor(HAND)
+        elif mouseX>= 75 and mouseX<= 145 and mouseY>= 372.5 and mouseY <= 452.5:
+            cursor(HAND)
+        else:
+            cursor(ARROW)
             
-   
-    
-            
-            
-           
+    if estado == 6:
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= 372.5 and mouseY <= 452.5:
+            cursor(HAND)
+        else:
+            cursor(ARROW)
             
     if error_window:
         
@@ -842,7 +1017,46 @@ def checkMousePosition():
             error_window_stroke = False
         
 
-        
+def obtener_playlist():
+    global playlist
+    global playlist_name
+    playlist = []
+    with open('user_playlists.txt') as json_file:
+        user_playlists = json.load(json_file)
+    with open('data.txt') as json_file:
+        data = json.load(json_file)
+    playlist_name = user_playlists[int(plsel) - 1]
+    for track in data['tracks']:
+        if track['playlist'] == playlist_name:
+            playlist.append(track)
+
+
+def obtener_artistas():
+    global artistas
+    artistas = []
+    with open('data.txt') as json_file:
+        data = json.load(json_file)
+    for track in data['tracks']:
+        if track['artist'] not in artistas:
+            artistas.append(track['artist'])
+    
+    
+
+def busca_index():
+    global error_window
+    global error
+    with open('user_playlists.txt') as json_file:
+        user_playlists = json.load(json_file)
+    index = len(user_playlists)
+    if int(plsel) >= 1 and int(plsel) <= index:
+        error_window = False
+        return True
+    else:
+        error = 'Playlist inexistente'
+        error_window = True
+        return False                
+                
+
 def draw():
     if estado == 0:
         checkMousePosition()
@@ -856,6 +1070,10 @@ def draw():
     if estado == 3:
         checkMousePosition()
         app.showPlaylist()
-    if estado == 4 or estado == 5:
+    if estado == 4 or estado == 5 or estado == 6:
         checkMousePosition()
         app.showTracks()
+    if estado == 7:
+        checkMousePosition()
+        app.showArtists()
+    

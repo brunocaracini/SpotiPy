@@ -30,7 +30,5 @@ def crearTabla():
 def borrarTabla():
     User.__table__.drop()
     
-
-crearTabla()    
-
+crearTabla()
 

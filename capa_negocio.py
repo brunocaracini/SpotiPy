@@ -12,14 +12,14 @@ class NegocioUser(object):
 
     def jsonDataOpen(self, accion):
         if accion == 'login':
-            with open('user_data.txt') as json_file:
+            with open('user_data.txt', 'r') as json_file:
                 user_data = json.load(json_file)
             usuario = user_data['usuario']
             password = user_data['password']
             return usuario, password
         
         elif accion == 'signup':
-            with open('user_data_signup.txt') as json_file:
+            with open('user_data_signup.txt', 'r') as json_file:
                 user_data_signup = json.load(json_file)
             usuario = user_data_signup['usuario']
             password = user_data_signup['password']
@@ -28,7 +28,7 @@ class NegocioUser(object):
             return usuario, password, uri, nombre
 
         elif accion == 'geturi':
-            with open('user_uri.txt') as json_file:
+            with open('user_uri.txt', 'r') as json_file:
                 user_uri = json.load(json_file)
             usuario = user_uri['usuario']
             return usuario
@@ -58,14 +58,17 @@ class NegocioUser(object):
         if accion == 'geturi':
             user_uri = {
                 'usuario': usuario,
-                'uri':uri
+                'uri':uri,
+                'nombre': nombre
             }
-        with open('user_uri.txt', 'w') as outfile:
-                json.dump(user_uri, outfile)
+            with open('user_uri.txt', 'w') as outfile:
+                    json.dump(user_uri, outfile)
 
     def buscarURI(self, email):
         return self.datos.buscarURI(email)
 
+    def buscarNombre(self, email):
+        return self.datos.buscarNombre(email)
 
     def buscarUsuario(self, email, uri):
         return self.datos.buscarUsuario(email, uri)

@@ -33,30 +33,32 @@ sp= spotipy.Spotify(auth=token)
 tracks_name = []
 tracks_artist = []
 playlists_name = []
+tracks_playlist = []
 
 # Main Program
-def show_tracks(tracks):
+def show_tracks(tracks, playlist):
     for i, item in enumerate(tracks['items']):
         track = item['track']
         tracks_name.append(track['name'])
         tracks_artist.append(track['artists'][0]['name'])
-        print("   %d %32.32s %s" % (i, track['artists'][0]['name'],track['name']))
+        tracks_playlist.append(playlist)
+        #print("   %d %32.32s %s" % (i, track['artists'][0]['name'],track['name']))
 
 
 playlists = sp.user_playlists(username)
 for playlist in playlists['items']:
         if playlist['owner']['id'] == username:
-            print()
-            print(playlist['name'])
+            #print()
+            #print(playlist['name'])
             playlists_name.append(playlist['name'])
-            print('  total tracks', playlist['tracks']['total'])
+            #print('  total tracks', playlist['tracks']['total'])
             results = sp.user_playlist(username, playlist['id'],
             fields="tracks,next")
             tracks = results['tracks']
-            show_tracks(tracks)
+            show_tracks(tracks, playlist['name'])
             while tracks['next']:
                 tracks = sp.next(tracks)
-                show_tracks(tracks)
+                show_tracks(tracks, playlist['name'])
 
 
 data = {}
@@ -65,6 +67,7 @@ for i in range(0,len(tracks_name)):
     data['tracks'].append({
         'name': tracks_name[i],
         'artist': tracks_artist[i],
+        'playlist': tracks_playlist[i],
         'index': i + 1
     })
 
