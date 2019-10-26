@@ -4,6 +4,9 @@ import sys
 import math
 import re
 
+busca_recomend = False
+artista_recomendaciones = ''
+recomend = False
 op = 0
 scroll = 0
 estado = 0
@@ -239,6 +242,19 @@ class Presentacion():
         text("Buscar Canales", 973, 388)
         text("de artistas", 998, 418)
         
+        #Opcion 5: Buscar Canales de Artistas de mis Playlist
+        if op5:
+            tint(117,231,193, 170)
+            fill(117,231,193, 170)
+        else:
+            tint(255,180)
+            fill(255,180)
+        photo = loadImage("favourite_icon.png")
+        image(photo, 1011, 33)
+        textSize(23)
+        text("Artistas", 1010, 150)
+        text("favoritos", 1005, 180)
+        
         #Opcion 6: Configuracion
         photo = loadImage("settings_icon.png")
         if op6:
@@ -394,6 +410,82 @@ class Presentacion():
             if op == 2 or op == 3 or op == 4:
                 image(youtube_icon, hposition + 680, vposition - 21 + scroll)                
             i+=1
+        
+        
+    def showRecomendaciones(self):
+        image(back, 0, 0)
+        
+        #Botón de atrás
+        image(back_button, 75 , height/2)
+        tint(255, 230)
+        
+        #Rectángulo Título de Playlist:
+        noStroke()
+        fill(40)
+        rect(200,120 + scroll, width - 400, 100, 20)
+        textSize(50)
+        fill (220, 230)
+        text("Artistas recomendados: " , 310, 185 + scroll)
+        
+        
+        #Rectangulo negro de fondo
+        noStroke()
+        fill(40)
+        rect(200,250 + scroll, width - 400, len(recomendaciones)*50 + 75, 20)
+        
+        #Imprimir playlists
+        vposition = 300
+        hposition = 350
+        i = 0
+        fill(255)
+        for artist in recomendaciones:
+            vposition +=50
+            stroke(70, 240)
+            line(220, vposition + 17 + scroll, width - 240, vposition + 15 + scroll)
+            fill (220, 230)                
+            textSize(18)
+            text(str(i + 1) + ".", hposition - 40, vposition + scroll)
+            text(artist[0:40], hposition, vposition + scroll)
+            if op== 6:
+                image(youtube_icon, hposition + 680, vposition - 21 + scroll)                
+            i+=1
+    
+    def busqueda_artista_form(self):
+        image(back, 0, 0)
+        
+        #cartel 
+        textSize(50)
+        fill(250, 230)
+        text('Ingrese artista', 490 , 245)
+        
+        
+        #Rectangulo ingreso artista
+        textSize(18)
+        noStroke()
+        fill(40)
+        if recomend:
+            stroke(117,231,193)
+        rect(445, 290, 450, 70)
+        fill(245,230)
+        text(artista_recomendaciones, 530 , 332)
+        
+        #Boton atras
+        image(back_button, 75 , height/2)
+        tint(255, 230)
+        
+        #Boton buscar
+        noStroke()
+        if len(artista_recomendaciones) == 0:
+            fill(90)
+        elif busca_recomend:
+            fill (117,231,193, 250)
+        else:
+            fill (117,231,193, 150)
+        rect(590,390,150,50,20)
+        textSize(18)
+        fill(255, 200)
+        text('Buscar', 640,420)
+
     
     def error_window_form(self):
         global error
@@ -470,6 +562,8 @@ def verifica_input(key_):
             verifica_input = True
         elif (int(ord(key_)) >= 48 and int(ord(key_)) <= 57): 
             verifica_input = True
+        elif estado == 8 and (int(ord(key_))) == 32:
+            verifica_input = True
     return verifica_input
     
 
@@ -523,7 +617,7 @@ def setup():
     
 def mouseWheel(event):
     global scroll
-    if estado == 5 or estado == 4 or estado == 6 or estado == 7:
+    if estado == 5 or estado == 4 or estado == 6 or estado == 7 or estado == 9:
         if scroll == 0:
             if event.getCount() >=0:
                 scroll -= event.getCount() * 50
@@ -545,6 +639,8 @@ def keyPressed():
     global sp_user
     global ingresapl
     global plsel
+    global recomend
+    global artista_recomendaciones
     
     
     if estado == 0:
@@ -587,6 +683,12 @@ def keyPressed():
             plsel += str(key)
         elif ingresapl and (key == BACKSPACE) and len(password)>0:
             plsel = plsel[:-1] 
+    
+    if estado == 8:
+        if recomend and verifica_input(key) and len(plsel) < 2:
+            artista_recomendaciones += str(key)
+        elif recomend and (key == BACKSPACE) and len(artista_recomendaciones)>0:
+            artista_recomendaciones = artista_recomendaciones[:-1] 
         
             
         
@@ -608,6 +710,7 @@ def mousePressed():
     global op
     global scroll
     global youtube
+    global recomend
     
     if estado == 0:
         #Resalta borde ingreso usuario
@@ -626,14 +729,14 @@ def mousePressed():
             
         #Ejecuta .py de validacion del login y cambia estado a 2 (Menu de opciones)
         elif mouseX >= 600 and mouseX <=750 and mouseY >=590 and mouseY <= 640 and len(usuario) > 0 and len(password) > 0:
-            #estado = 2
-            printText()
+            estado = 2
+            '''printText()
             exporta_json()
             if importa_json():
                 estado = 2
                 exporta_json()
                 importa_json()
-                os.system("Python Obtener_canciones.py {0}".format(uri))
+                os.system("Python Obtener_canciones.py {0}".format(uri))'''
         
         #Cambia estado a Registrarse
         elif mouseX>= 470 and mouseX<= 835 and mouseY>= 545 and mouseY <= 579:
@@ -711,6 +814,15 @@ def mousePressed():
             obtener_artistas()
             op = 4
             estado = 7
+        
+        #Recomendación de artistas
+        if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 470 and mouseY <= 563) or (mouseX>= 993 and mouseX<= 1120 and mouseY>= 572 and mouseY <= 620):
+            op = 6
+            cursor(ARROW)
+            estado = 8
+            
+             
+            
     
     elif estado == 3:
         
@@ -791,9 +903,41 @@ def mousePressed():
                 json.dump(arg, outfile)
             os.system("Python busqueda_canales.py")
         
-        #Cambia estado a 3 (vuelve hacia atrás)
+        #Cambia estado a 2 (vuelve hacia atrás)
         if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
             estado = 2
+            scroll = 0
+    
+    elif estado == 8:
+        
+        #Resalta borde ingreso artista para recomendaciones
+        if mouseX >= 445 and mouseX <=895 and mouseY >=290 and mouseY <= 360:
+            recomend = True
+        
+        #Cambia estado a 2 (vuelve hacia atrás)
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
+            estado = 2
+            scroll = 0
+        
+        if mouseX>= 580 and mouseX<= 750 and mouseY>= 380 and mouseY <= 450 and len(artista_recomendaciones) >0:
+            obtener_recomendaciones1()
+            estado = 9
+            
+    elif estado == 9:
+
+        if mouseX>=1025 and mouseX<=1075:
+            with open('data.txt') as json_file:
+                data = json.load(json_file)  
+            numero = math.ceil((mouseY - scroll + 340)/50) - 13        
+            arg = recomendaciones[int(numero)]
+            arg = re.sub('[^a-zA-Z.\d\s]', '', arg)
+            with open('channel.txt', 'w') as outfile:
+                json.dump(arg, outfile)
+            os.system("Python busqueda_canales.py")
+        
+        #Cambia estado a 8 (vuelve hacia atrás)
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
+            estado = 8
             scroll = 0
     
     if error_window:
@@ -886,6 +1030,7 @@ def checkMousePosition():
     global op5
     global op6
     global error_window_stroke
+    global busca_recomend
 
     
     
@@ -992,7 +1137,7 @@ def checkMousePosition():
             cursor(ARROW)
         
             
-    if estado == 4 or estado == 5 or estado == 7:
+    if estado == 4 or estado == 5 or estado == 7 or estado == 9:
         
         #Cambia cursor en icono youtube y botón de atrás
         if mouseX>=1025 and mouseX<=1075:
@@ -1004,6 +1149,20 @@ def checkMousePosition():
             
     if estado == 6:
         if mouseX>= 75 and mouseX<= 145 and mouseY>= 372.5 and mouseY <= 452.5:
+            cursor(HAND)
+        else:
+            cursor(ARROW)
+    
+    if estado == 8:
+        
+        #Cambia color boton buscar artistas recomendados
+        if mouseX>= 580 and mouseX<= 750 and mouseY>= 380 and mouseY <= 450:
+            busca_recomend = True
+        elif estado == 8:
+            busca_recomend = False
+        
+        #Cambia Mouse en boton atras y boton buscar
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= 372.5 and mouseY <= 452.5 or recomend:
             cursor(HAND)
         else:
             cursor(ARROW)
@@ -1030,7 +1189,6 @@ def obtener_playlist():
         if track['playlist'] == playlist_name:
             playlist.append(track)
 
-
 def obtener_artistas():
     global artistas
     artistas = []
@@ -1039,6 +1197,18 @@ def obtener_artistas():
     for track in data['tracks']:
         if track['artist'] not in artistas:
             artistas.append(track['artist'])
+    
+
+
+def obtener_recomendaciones1():
+    global recomendaciones
+    global artista_recomendaciones
+    with open('artista_recomendaciones.txt', 'w') as outfile:        
+        json.dump(artista_recomendaciones, outfile)
+    os.system("Python buscar_reco.py")
+    with open('reco.txt') as json_file:
+        reco = json.load(json_file)
+    recomendaciones = reco
     
     
 
@@ -1055,7 +1225,7 @@ def busca_index():
         error = 'Playlist inexistente'
         error_window = True
         return False                
-                
+
 
 def draw():
     if estado == 0:
@@ -1076,4 +1246,11 @@ def draw():
     if estado == 7:
         checkMousePosition()
         app.showArtists()
+    if estado == 8:
+        checkMousePosition()
+        app.busqueda_artista_form()
+    if estado == 9:
+        checkMousePosition()
+        app.showRecomendaciones()
+        
     
