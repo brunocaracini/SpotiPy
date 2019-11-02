@@ -4,6 +4,7 @@ import sys
 import math
 import re
 
+salir = False
 busca_recomend = False
 artista_recomendaciones = ''
 recomend = False
@@ -15,6 +16,7 @@ password = ''
 password2 = ''
 uri = ''
 nombre = ''
+name = False
 sp_user = False
 user = False
 passw = False
@@ -36,7 +38,7 @@ ingresapl2 = False
 len_data = 0
 playlist = []
 youtube = True
-
+canciones = []
 
 
 
@@ -101,7 +103,7 @@ class Presentacion():
     
      
     def signup(self):
-        if usuario == '' and password == '' and password2 == '' and uri == '':
+        if usuario == '' and password == '' and password2 == '' and uri == '' and nombre == '':
             self.signup_form()
     
     def signup_form(self):
@@ -109,45 +111,56 @@ class Presentacion():
         
         #Cartel Registrese
         textSize(50)
-        fill(250, 240)
-        text('Registrese', 545 , 130)
+        fill(250, 230)
+        text('Registrese', 545 , 80)
         
         #Recuadro ingreso usuario
         noStroke()
         photo = loadImage("user_icon.png")
-        image(photo, 460, 217)
+        image(photo, 460, 147)
+        fill(240, 50)
+        if name:
+            stroke(117,231,193)
+        rect(445, 130, 450, 70)
+        
+        #Recuadro ingreso mail
+        noStroke()
+        photo = loadImage("mail_icon.png")
+        tint(230, 120)
+        image(photo, 460, 244)
+        noTint()
         fill(240, 50)
         if user:
             stroke(117,231,193)
-        rect(445, 200, 450, 70)
+        rect(445, 220, 450, 70)
        
         
         #Recuadro ingreso uri Spotify
         noStroke()
         fill(240, 50)
         photo = loadImage("spotify_icon.png")
-        image(photo, 464, 309)
+        image(photo, 464, 329)
         if sp_user:
             stroke(117,231,193)
-        rect(445, 290, 450, 70)
+        rect(445, 310, 450, 70)
         
         #Recuadro ingreso contraseña
         noStroke()
         photo = loadImage("password_icon.png")
-        image(photo, 460, 397)
+        image(photo, 460, 417)
         fill(240, 50)
         if passw:
            stroke(117,231,193)
-        rect(445, 380, 450, 70)
+        rect(445, 400, 450, 70)
         
         #Recuadro ingreso contraseña 2
         noStroke()
         photo = loadImage("password_icon.png")
-        image(photo, 460, 487)
+        image(photo, 460, 507)
         fill(240, 50)
         if passw2:
            stroke(117,231,193)
-        rect(445, 470, 450, 70)
+        rect(445, 490, 450, 70)
         
         #boton Registrarse
         noStroke()
@@ -155,10 +168,10 @@ class Presentacion():
             fill (117,231,193, 250)
         else:
             fill (117,231,193, 150)
-        rect(600,590,150,50,20)
+        rect(600,610,150,50,20)
         textSize(18)
         fill(255, 200)
-        text('Sign up', 643,620)
+        text('Sign up', 643,640)
         
         #Log In
         if log_in:
@@ -166,7 +179,7 @@ class Presentacion():
         else: 
             fill(255,180)
         textSize(17)
-        text('Ya posee una cuenta? Inicie sesion aqui',500,567)
+        text('Ya posee una cuenta? Inicie sesion aqui',500,587)
         
         #Error window
         if error_window:
@@ -184,35 +197,88 @@ class Presentacion():
         #Texto menu lateral
         fill(240,230)
         textSize(25)
-  
+        
+        #Icono usuario barra lateral
         text(nombre, 140, 110)
-        tint(255,180)
+        tint(255,240)
         photo = loadImage("usermenu_icon.png")
         image(photo, 20, 50)
+        
+        
+        #Informacion usuario:
+        textSize(40)
+        fill(117,231,193, 220)
+        if canciones <10:
+            text(canciones, 55,450)
+        elif canciones <100:
+            text(canciones, 42,450)
+        else:
+            text(canciones, 30,450)
+            
+            
+        if artistas <10:
+            text(len(artistas), 161,450)
+        elif len(artistas) <100:
+            text(len(artistas), 149,450)
+        else:
+            text(len(artistas), 137,450)
+        
+        
+        if cant_playlist <10:
+            text(cant_playlist, 258,450)
+        elif cant_playlist <100:
+            text(cant_playlist, 247,450)
+        else:
+            text(cant_playlist, 236,450)
+        
+        fill(255,210)
+        textSize(35)
+        text("Estadisticas",70,280)
+        textSize(15)
+        text("Canciones", 30,480)
+        text("Artistas", 145,480)
+        text("Playlist", 245,480)
+        stroke(240,100)
+        line(20,220,330,220)
+        line(20,520,330,520)
+        noStroke()
+        
+        #Opcion de salir en barra lateral
+        if salir:
+            tint(117,231,193, 170)
+            fill(117,231,193, 170)
+        else:
+            tint(255)
+            fill(255)
+        photo = loadImage("exit_icon.png")
+        image(photo, 20, 630)
+        textSize(20)
+        text("Cerrar sesion", 85, 665)
+        
         
         #Opcion 1: Mostrar tracks de una playlist en Spotify
         if op1:
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
-            tint(255,180)
-            fill(255,180)
+            tint(250,210)
+            fill(255,210)
         photo = loadImage("playlist_icon.png")
         image(photo, 602, 25)
-        textSize(23)
-        text("Spotify", 614, 150)
-        text("Playlists", 607, 180)
+        textSize(22)
+        text("Spotify", 618, 150)
+        text("Playlists", 611, 180)
         
         #Opcion 2: Buscar Videos de una PlayList
         if op2:
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
-            tint(255,180)
-            fill(255,180)
+            tint(250,210)
+            fill(255,210)
         photo = loadImage("videoSearch_icon.png")
         image(photo, 613, 263)
-        textSize(23)
+        textSize(22)
         text("Buscar videos", 587, 388)
         text("desde playlist", 585, 418)
         
@@ -221,39 +287,39 @@ class Presentacion():
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
-            tint(255,180)
-            fill(255,180)
+            tint(250,210)
+            fill(255,210)
         photo = loadImage("videoSearch_icon.png")
         image(photo, 613, 490)
-        textSize(23)
-        text("Video Lyric", 598, 615)
-        text("desde playlist", 582, 645)
+        textSize(22)
+        text("Video lyric", 600, 615)
+        text("desde playlist", 584, 645)
         
         #Opcion 4: Buscar Canales de Artistas de mis Playlist
         if op4:
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
-            tint(255,180)
-            fill(255,180)
+            tint(250,210)
+            fill(255,210)
         photo = loadImage("channel_icon.png")
         image(photo, 1011, 263)
-        textSize(23)
-        text("Buscar Canales", 973, 388)
-        text("de artistas", 998, 418)
+        textSize(22)
+        text("Buscar Canales", 976, 388)
+        text("de artistas", 1001, 418)
         
         #Opcion 5: Buscar Canales de Artistas de mis Playlist
         if op5:
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
-            tint(255,180)
-            fill(255,180)
+            tint(250,210)
+            fill(255,210)
         photo = loadImage("favourite_icon.png")
         image(photo, 1011, 33)
-        textSize(23)
-        text("Artistas", 1010, 150)
-        text("favoritos", 1005, 180)
+        textSize(22)
+        text("Artistas", 1011, 150)
+        text("Favoritos", 1006, 180)
         
         #Opcion 6: Configuracion
         photo = loadImage("settings_icon.png")
@@ -261,11 +327,12 @@ class Presentacion():
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
-            tint(255,180)
-            fill(255,180)
+            tint(250,210)
+            fill(255,210)
         image(photo, 1013, 493)
-        textSize(23)
-        text("Settings", 1011, 615)
+        textSize(22)
+        text("Artistas", 1013, 615)
+        text("Recomendados", 980, 645)
     
         #Default Settings:
         tint(255,180)
@@ -394,7 +461,7 @@ class Presentacion():
         fill(40)
         rect(200,250 + scroll, width - 400, len(artistas)*50 + 75, 20)
         
-        #Imprimir playlists
+        #Imprimir Artistas
         vposition = 300
         hposition = 350
         i = 0
@@ -523,7 +590,7 @@ class Presentacion():
 
 app = Presentacion()
 
-
+        
 def reset():
     global usuario
     global password
@@ -535,6 +602,7 @@ def reset():
     global passw
     global log_in
     global sign_up
+    global nombre
 
     sign_up = False
     log_in = False
@@ -542,10 +610,12 @@ def reset():
     passw = False
     passw2 = False
     sp_user = False
+    name = False
     usuario = ''
     password = ''
     password2 = ''
     uri = ''
+    nombre = ''
 
 
 def verifica_input(key_):
@@ -577,6 +647,7 @@ def printText():
     global ingresapl
     global ingresapl2
     global plsel
+    global nombre
     
     if estado == 0:
         app.login_form()
@@ -590,10 +661,11 @@ def printText():
         app.signup_form()
         fill(240)
         if error_window == False:
-            text(usuario, 530 , 242)
-            text(uri, 530 , 332)
-            text(password, 530 , 422)
-            text(password2, 530 , 512)
+            text(nombre, 530, 172)
+            text(usuario, 530 , 262)
+            text(uri, 530 , 352)
+            text(password, 530 , 442)
+            text(password2, 530 , 532)
             
     elif estado == 3:
         app.showPlaylist()
@@ -641,7 +713,8 @@ def keyPressed():
     global plsel
     global recomend
     global artista_recomendaciones
-    
+    global nombre
+    global name
     
     if estado == 0:
         textSize(18)
@@ -657,6 +730,11 @@ def keyPressed():
     
     if estado == 1:
         textSize(18)
+        
+        if name and verifica_input(key):
+            nombre += str(key)
+        elif name and (key == BACKSPACE) and len(nombre)>0:
+            nombre = nombre[:-1]  
         
         if user and verifica_input(key):
             usuario += str(key)
@@ -711,6 +789,7 @@ def mousePressed():
     global scroll
     global youtube
     global recomend
+    global name
     
     if estado == 0:
         #Resalta borde ingreso usuario
@@ -729,14 +808,18 @@ def mousePressed():
             
         #Ejecuta .py de validacion del login y cambia estado a 2 (Menu de opciones)
         elif mouseX >= 600 and mouseX <=750 and mouseY >=590 and mouseY <= 640 and len(usuario) > 0 and len(password) > 0:
-            estado = 2
-            '''printText()
+            #estado = 2
+            printText()
             exporta_json()
             if importa_json():
                 estado = 2
                 exporta_json()
                 importa_json()
-                os.system("Python Obtener_canciones.py {0}".format(uri))'''
+                os.system("Python Obtener_canciones.py {0}".format(uri))
+                obtener_artistas()
+                obtener_playlist()
+                obtener_canciones()
+             
         
         #Cambia estado a Registrarse
         elif mouseX>= 470 and mouseX<= 835 and mouseY>= 545 and mouseY <= 579:
@@ -746,47 +829,61 @@ def mousePressed():
     
     elif estado == 1:
         
-        #Resalta borde ingreso usuario
-        if mouseX >= 445 and mouseX <=895 and mouseY >=200 and mouseY <= 290:
+        #Resalta borde ingreso nombre de usuario
+        if mouseX >= 445 and mouseX <=895 and mouseY >=130 and mouseY <= 240:
             passw = False
             passw2 = False
             sp_user = False
+            user = False
+            name = True
+            printText()
+        
+        #Resalta borde ingreso usuario
+        if mouseX >= 445 and mouseX <=895 and mouseY >=220 and mouseY <= 310:
+            passw = False
+            passw2 = False
+            sp_user = False
+            name = False
             user = True
             printText()
 
         #Resalta borde ingreso uri Spotify
-        if mouseX >= 445 and mouseX <=895 and mouseY >=290 and mouseY <= 360:
+        if mouseX >= 445 and mouseX <=895 and mouseY >=310 and mouseY <= 380:
             sp_user = True
             passw = False
             passw2 = False
+            name = False
             user = False
             printText()
         
         #Resalta borde ingreso contraseña 1
-        if mouseX >= 445 and mouseX <=895 and mouseY >=380 and mouseY <= 450:
+        if mouseX >= 445 and mouseX <=895 and mouseY >=400 and mouseY <= 470:
             passw = True
             passw2 = False
             user = False
             sp_user = False
+            name = False
             printText()
         
         #Resalta borde ingreso Contraseña 2
-        elif mouseX >= 445 and mouseX <=895 and mouseY >=470 and mouseY <= 540:
+        elif mouseX >= 445 and mouseX <=895 and mouseY >=490 and mouseY <= 560:
             user = False
             passw = False
+            nombre = False
             sp_user = False
+            nombre = False
             passw2 = True
             printText()
             
         #Ejecuta Registro y cambia estado a Log In (estado = 0)
-        elif mouseX >= 600 and mouseX <=750 and mouseY >=590 and mouseY <= 640:
+        elif mouseX >= 600 and mouseX <=750 and mouseY >=610 and mouseY <= 660:
             exporta_json()
             if importa_json():
                 estado = 0
 
         
         #Cambia estado a Registrarse
-        elif mouseX>= 470 and mouseX<= 835 and mouseY>= 545 and mouseY <= 579:
+        elif mouseX>= 470 and mouseX<= 835 and mouseY>= 565 and mouseY <= 599:
             estado = 0
             reset()
         
@@ -820,6 +917,13 @@ def mousePressed():
             op = 6
             cursor(ARROW)
             estado = 8
+        
+        #Cerrar sesion
+        if (mouseX>= 20 and mouseX<= 220 and mouseY>= 640 and mouseY <= 685):
+            salir = False
+            cursor(ARROW)
+            reset()
+            estado = 0
             
              
             
@@ -951,18 +1055,19 @@ def importa_json():
     global error_window
     global uri
     global nombre
+    global cant_playlist
 
     if estado == 0:
-        with open('user_data.txt') as json_file:
+        with open('user_login_result.txt') as json_file:
             user_data = json.load(json_file)
-        error = user_data['estado']
-        os.system("DEL user_data.txt")
+        error = user_data
+        os.system("DEL user_login_result.txt")
             
     elif estado == 1:
-        with open('user_data_signup.txt') as json_file:
+        with open('user_signup_result.txt') as json_file:
             user_data_signup = json.load(json_file)
-        error = user_data_signup['estado']
-        os.system("DEL user_data_signup.txt")
+        error = user_data_signup
+        os.system("DEL user_signup_result.txt")
     
     elif estado == 2:
         with open('user_uri.txt') as json_file:
@@ -970,6 +1075,7 @@ def importa_json():
         uri = user_uri['uri']
         nombre = user_uri['nombre']
         os.system("DEL user_uri.txt")
+        
 
     if error == 'ok':
         error_window = False
@@ -984,6 +1090,7 @@ def exporta_json():
     global password2
     global uri
     global estado
+    global nombre
     
     if estado == 0:
         user_data = {  
@@ -1001,7 +1108,7 @@ def exporta_json():
                 'password': password,
                 'uri' : uri,
                 'estado': '',
-                'nombre': 'Mario Ernesto'
+                'nombre': nombre
                 }     
         with open('user_data_signup.txt', 'w') as outfile:
             json.dump(user_data_signup, outfile)
@@ -1029,6 +1136,7 @@ def checkMousePosition():
     global op4
     global op5
     global op6
+    global salir
     global error_window_stroke
     global busca_recomend
 
@@ -1060,7 +1168,7 @@ def checkMousePosition():
             
     if estado == 1:
         #Cambia color del cartel de cambio de estado
-        if mouseX>= 470 and mouseX<= 835 and mouseY>= 545 and mouseY <= 579:
+        if mouseX>= 470 and mouseX<= 835 and mouseY>= 565 and mouseY <= 599:
             log_in = True
             printText()
         elif estado == 1:
@@ -1068,7 +1176,7 @@ def checkMousePosition():
             printText()
             
         #Cambia color boton Registrame
-        if mouseX >= 600 and mouseX <=750 and mouseY >=600 and mouseY <= 640:
+        if mouseX >= 600 and mouseX <=750 and mouseY >=620 and mouseY <= 660:
             sign_up = True
             printText()
         elif estado == 1:
@@ -1096,7 +1204,7 @@ def checkMousePosition():
 
         
         #Cambia color opcion 3 (Buscar video Lyrics para una Playlist)
-        if (mouseX>= 600.5 and mouseX<= 700.5 and mouseY>= 470 and mouseY <= 563) or (mouseX>= 590 and mouseX<= 740 and mouseY>= 572 and mouseY <= 655):
+        if (mouseX>= 600.5 and mouseX<= 700.5 and mouseY>= 470 and mouseY <= 577) or (mouseX>= 590 and mouseX<= 740 and mouseY>= 600 and mouseY <= 655):
             op3 = True
         elif estado == 2:
             op3 = False
@@ -1108,13 +1216,19 @@ def checkMousePosition():
             op4 = False
         
         #Cambia color opcion 6 (Configuración)
-        if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 470 and mouseY <= 563) or (mouseX>= 993 and mouseX<= 1120 and mouseY>= 572 and mouseY <= 620):
+        if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 470 and mouseY <= 577) or (mouseX>= 977 and mouseX<= 1160 and mouseY>= 600 and mouseY <= 660):
             op6 = True
         elif estado == 2:
             op6 = False
             
+        #Cambia color opcion cerrar sesion
+        if (mouseX>= 20 and mouseX<= 220 and mouseY>= 640 and mouseY <= 685):
+            salir = True
+        elif estado == 2:
+            salir = False
+            
         #Cambia cursor de una flecha a una mano
-        if op1 or op2 or op3 or op4 or op5 or op6:
+        if op1 or op2 or op3 or op4 or op5 or op6 or salir:
             cursor(HAND)
         else:
             cursor(ARROW)
@@ -1179,15 +1293,19 @@ def checkMousePosition():
 def obtener_playlist():
     global playlist
     global playlist_name
+    global cant_playlist
     playlist = []
     with open('user_playlists.txt') as json_file:
         user_playlists = json.load(json_file)
     with open('data.txt') as json_file:
         data = json.load(json_file)
-    playlist_name = user_playlists[int(plsel) - 1]
-    for track in data['tracks']:
-        if track['playlist'] == playlist_name:
-            playlist.append(track)
+    if estado == 2:
+        cant_playlist = len(user_playlists)
+    elif estado == 3:
+        playlist_name = user_playlists[int(plsel) - 1]
+        for track in data['tracks']:
+            if track['playlist'] == playlist_name:
+                playlist.append(track)
 
 def obtener_artistas():
     global artistas
@@ -1198,7 +1316,11 @@ def obtener_artistas():
         if track['artist'] not in artistas:
             artistas.append(track['artist'])
     
-
+def obtener_canciones():
+    global canciones
+    with open('data.txt') as json_file:
+        data = json.load(json_file)
+    canciones = len(data['tracks'])
 
 def obtener_recomendaciones1():
     global recomendaciones

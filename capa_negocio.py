@@ -36,24 +36,29 @@ class NegocioUser(object):
     def jsonDataReturn(self, usuario, password, estado, uri, nombre, accion):
 
         if accion == 'login':
-            user_data={
+            '''user_data={
                 'usuario': usuario,
                 'password': password,
                 'estado': estado
             }
             with open('user_data.txt', 'w') as outfile:
-                json.dump(user_data, outfile)
+                json.dump(user_data, outfile)'''
+            user_login_result = estado
+            with open('user_login_result.txt', 'w') as outfile:
+                json.dump(user_login_result, outfile)
+
 
         if accion == 'signup':
-            user_data_signup={
+            '''user_data_signup={
             'usuario': usuario,
             'password': password,
             'estado': estado,
             'uri': uri,
             'nombre': nombre
-            }
-            with open('user_data_signup.txt', 'w') as outfile:
-                json.dump(user_data_signup, outfile)
+            }'''
+            user_signup_result = estado
+            with open('user_signup_result.txt', 'w') as outfile:
+                json.dump(user_signup_result, outfile)
         
         if accion == 'geturi':
             user_uri = {

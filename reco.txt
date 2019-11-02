@@ -1,1 +1,1 @@
-["Guns N' Roses", "Led Zeppelin", "Scorpions", "ZZ Top", "AC/DC", "Van Halen", "M\u00f6tley Cr\u00fce", "Dio", "Stone Temple Pilots", "Skid Row", "Warrant", "Def Leppard", "Black Sabbath", "Heart", "Twisted Sister", "Metallica"]
+["ABBA", "Irene Cara", "10cc", "Bee Gees", "Elton John", "The Mamas & The Papas", "Electric Light Orchestra", "Dusty Springfield", "Village People", "Roxette", "Bonnie Tyler", "Barbra Streisand", "Barry Manilow", "George Michael"]
