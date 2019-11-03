@@ -4,6 +4,8 @@ import sys
 import math
 import re
 
+refresh = False
+config = False
 salir = False
 busca_recomend = False
 artista_recomendaciones = ''
@@ -187,73 +189,102 @@ class Presentacion():
     
         
     def menu_form(self):
-        
         image(back, 0, 0)
         
         #Barra Lateral del menu
-        fill(40)
+        fill(20)
         rect(0,0,350,height)
         
         #Texto menu lateral
-        fill(240,230)
-        textSize(25)
+        fill(240,210)
+        textSize(20)
         
         #Icono usuario barra lateral
-        text(nombre, 140, 110)
+        textAlign(CENTER)
+        text(nombre + " | " + uri, 175, 180)
+        textAlign(LEFT)
         tint(255,240)
         photo = loadImage("usermenu_icon.png")
-        image(photo, 20, 50)
+        image(photo, 105, 20)
         
         
         #Informacion usuario:
         textSize(40)
         fill(117,231,193, 220)
         if canciones <10:
-            text(canciones, 55,450)
+            text(canciones, 55,420)
         elif canciones <100:
-            text(canciones, 42,450)
+            text(canciones, 42,420)
         else:
-            text(canciones, 30,450)
+            text(canciones, 30,420)
             
             
         if artistas <10:
-            text(len(artistas), 161,450)
+            text(len(artistas), 161,420)
         elif len(artistas) <100:
-            text(len(artistas), 149,450)
+            text(len(artistas), 149,420)
         else:
-            text(len(artistas), 137,450)
+            text(len(artistas), 137,420)
         
         
         if cant_playlist <10:
-            text(cant_playlist, 258,450)
+            text(cant_playlist, 258,420)
         elif cant_playlist <100:
-            text(cant_playlist, 247,450)
+            text(cant_playlist, 247,420)
         else:
-            text(cant_playlist, 236,450)
+            text(cant_playlist, 236,420)
         
         fill(255,210)
-        textSize(35)
-        text("Estadisticas",70,280)
+        textSize(25)
         textSize(15)
-        text("Canciones", 30,480)
-        text("Artistas", 145,480)
-        text("Playlist", 245,480)
+        text("Canciones", 30,450)
+        text("Artistas", 145,450)
+        text("Playlist", 245,450)
         stroke(240,100)
-        line(20,220,330,220)
-        line(20,520,330,520)
+        line(20,215,330,215)
+        line(20,490,330,490)
         noStroke()
+        
+        #Imagen estadisticas
+        photo = loadImage("stats_icon.png")
+        image(photo, 105, 240)
         
         #Opcion de salir en barra lateral
         if salir:
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
-            tint(255)
-            fill(255)
+            tint(240,210)
+            fill(240,210)
         photo = loadImage("exit_icon.png")
         image(photo, 20, 630)
         textSize(20)
         text("Cerrar sesion", 85, 665)
+        
+        
+        #Opcion de configuracion en barra lateral
+        if config:
+            tint(117,231,193, 170)
+            fill(117,231,193, 170)
+        else:
+            tint(240,210)
+            fill(240,210)
+        photo = loadImage("settings_icon.png")
+        image(photo, 25, 580)
+        textSize(20)
+        text("Modificar datos", 85, 605)
+        
+        #Opcion de actualizar en barra lateral
+        if refresh:
+            tint(117,231,193, 170)
+            fill(117,231,193, 170)
+        else:
+            tint(240,210)
+            fill(240,210)
+        photo = loadImage("refresh_icon.png")
+        image(photo, 25, 520)
+        textSize(20)
+        text("Actualizar", 85, 547)
         
         
         #Opcion 1: Mostrar tracks de una playlist en Spotify
@@ -262,7 +293,7 @@ class Presentacion():
             fill(117,231,193, 170)
         else:
             tint(250,210)
-            fill(255,210)
+            fill(240,210)
         photo = loadImage("playlist_icon.png")
         image(photo, 602, 25)
         textSize(22)
@@ -321,15 +352,15 @@ class Presentacion():
         text("Artistas", 1011, 150)
         text("Favoritos", 1006, 180)
         
-        #Opcion 6: Configuracion
-        photo = loadImage("settings_icon.png")
+        #Opcion 6: Recomendar artistas
+        photo = loadImage("music_icon.png")
         if op6:
             tint(117,231,193, 170)
             fill(117,231,193, 170)
         else:
             tint(250,210)
             fill(255,210)
-        image(photo, 1013, 493)
+        image(photo, 1013, 487)
         textSize(22)
         text("Artistas", 1013, 615)
         text("Recomendados", 980, 645)
@@ -348,7 +379,6 @@ class Presentacion():
         #Botón de atrás
         image(back_button, 75 , height/2)
         tint(255, 230)
-    
         
         #Rectangulo negro de fondo
         noStroke()
@@ -582,7 +612,9 @@ class Presentacion():
         
         #Mensaje del error
         fill(240, 240)
-        text("Error: " + error, 565, 430)
+        textAlign(CENTER)
+        text("Error: "+ error, 670, 430)
+        textAlign(LEFT)
         
 
 
@@ -590,7 +622,7 @@ class Presentacion():
 
 app = Presentacion()
 
-        
+
 def reset():
     global usuario
     global password
@@ -790,6 +822,7 @@ def mousePressed():
     global youtube
     global recomend
     global name
+    global error
     
     if estado == 0:
         #Resalta borde ingreso usuario
@@ -808,7 +841,11 @@ def mousePressed():
             
         #Ejecuta .py de validacion del login y cambia estado a 2 (Menu de opciones)
         elif mouseX >= 600 and mouseX <=750 and mouseY >=590 and mouseY <= 640 and len(usuario) > 0 and len(password) > 0:
-            #estado = 2
+            '''estado = 2
+            obtener_artistas()
+            obtener_playlist()
+            obtener_canciones()
+            '''
             printText()
             exporta_json()
             if importa_json():
@@ -924,6 +961,13 @@ def mousePressed():
             cursor(ARROW)
             reset()
             estado = 0
+        
+        #Actualizar
+        if (mouseX>= 20 and mouseX<= 200 and mouseY>= 520 and mouseY <= 565):
+            os.system("Python Obtener_canciones.py {0}".format(uri))
+            obtener_canciones()
+            obtener_artistas()
+            obtener_playlist()
             
              
             
@@ -1047,6 +1091,7 @@ def mousePressed():
     if error_window:
         if (mouseX>= 570 and mouseX<= 770 and  mouseY>= 447 and mouseY<= 467):
             error_window = False
+            error = ''
     
         
 def importa_json():
@@ -1093,11 +1138,7 @@ def exporta_json():
     global nombre
     
     if estado == 0:
-        user_data = {  
-            'usuario': usuario,
-            'password': password,
-            'estado': ''
-            }     
+        user_data = [usuario, password]
         with open('user_data.txt', 'w') as outfile:
             json.dump(user_data, outfile)
         os.system("Python capa_interfaz.py login") 
@@ -1139,7 +1180,9 @@ def checkMousePosition():
     global salir
     global error_window_stroke
     global busca_recomend
-
+    global config
+    global refresh
+    global error_window
     
     
     if estado == 0:
@@ -1159,9 +1202,9 @@ def checkMousePosition():
             log_in = False
             printText()
         
-        if sign_up or log_in:
+        if (sign_up or log_in) and error_window == False:
             cursor(HAND)
-        else:
+        elif error_window == False:
             cursor(ARROW)
         
             
@@ -1183,9 +1226,9 @@ def checkMousePosition():
             sign_up = False
             printText()
             
-        if sign_up or log_in:
+        if (sign_up or log_in) and error_window == False:
             cursor(HAND)
-        else:
+        elif error_window == False:
             cursor(ARROW)
         
     if estado == 2:
@@ -1226,12 +1269,25 @@ def checkMousePosition():
             salir = True
         elif estado == 2:
             salir = False
+        
+        #Cambia color opcion modficar datos
+        if (mouseX>= 20 and mouseX<= 235 and mouseY>= 580 and mouseY <= 625):
+            config = True
+        elif estado == 2:
+            config = False
+            
+        #Cambia color opcion actualizar
+        if (mouseX>= 20 and mouseX<= 200 and mouseY>= 520 and mouseY <= 565):
+            refresh = True
+        elif estado == 2:
+            refresh = False
             
         #Cambia cursor de una flecha a una mano
-        if op1 or op2 or op3 or op4 or op5 or op6 or salir:
+        if op1 or op2 or op3 or op4 or op5 or op6 or salir or config or refresh:
             cursor(HAND)
         else:
             cursor(ARROW)
+            
 
     if estado == 3:
         
@@ -1286,8 +1342,10 @@ def checkMousePosition():
         #Cambia color boton aceptar de la ventana de error
         if (mouseX>= 560 and mouseX<= 780 and  mouseY>= 437 and mouseY<= 487):
             error_window_stroke = True
+            cursor(HAND)
         else:
             error_window_stroke = False
+            cursor(ARROW)
         
 
 def obtener_playlist():

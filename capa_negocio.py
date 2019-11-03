@@ -1,5 +1,6 @@
 from capa_datos import DatosUser
 import json
+import os
 
 
 class NegocioUser(object):
@@ -14,8 +15,9 @@ class NegocioUser(object):
         if accion == 'login':
             with open('user_data.txt', 'r') as json_file:
                 user_data = json.load(json_file)
-            usuario = user_data['usuario']
-            password = user_data['password']
+            usuario = user_data[0]
+            password = user_data[1]
+            os.system("DEL user_data.txt")
             return usuario, password
         
         elif accion == 'signup':
@@ -25,6 +27,7 @@ class NegocioUser(object):
             password = user_data_signup['password']
             uri = user_data_signup['uri']
             nombre = user_data_signup['nombre']
+            os.system("DEL user_data_signup.txt")
             return usuario, password, uri, nombre
 
         elif accion == 'geturi':

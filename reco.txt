@@ -1,1 +1,1 @@
-["ABBA", "Irene Cara", "10cc", "Bee Gees", "Elton John", "The Mamas & The Papas", "Electric Light Orchestra", "Dusty Springfield", "Village People", "Roxette", "Bonnie Tyler", "Barbra Streisand", "Barry Manilow", "George Michael"]
+["Katy Perry", "Gwen Stefani", "Miley Cyrus", "Britney Spears", "The Black Eyed Peas", "Jason Derulo", "Carly Rae Jepsen", "Avril Lavigne", "Meghan Trainor", "Charli XCX", "Demi Lovato", "Fifth Harmony", "P!nk", "The Pussycat Dolls", "Ellie Goulding"]
