@@ -1,1 +1,1 @@
-["Katy Perry", "Gwen Stefani", "Miley Cyrus", "Britney Spears", "The Black Eyed Peas", "Jason Derulo", "Carly Rae Jepsen", "Avril Lavigne", "Meghan Trainor", "Charli XCX", "Demi Lovato", "Fifth Harmony", "P!nk", "The Pussycat Dolls", "Ellie Goulding"]
+["Dua Lipa", "Charli XCX", "Camila Cabello", "Katy Perry", "Julia Michaels", "Nick Jonas", "Zara Larsson", "NOTD", "Lorde", "Anne-Marie", "Jessie J", "Selena Gomez & The Scene", "Liam Payne", "ZAYN", "Jess Glynne"]

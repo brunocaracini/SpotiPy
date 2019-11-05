@@ -3,7 +3,11 @@ import os
 import sys
 import math
 import re
+from collections import Counter
 
+
+mousex = 0
+mousey= 0
 refresh = False
 config = False
 salir = False
@@ -53,7 +57,6 @@ class Presentacion():
     def login_form(self):
          
         image(back, 0, 0)
-        
         #Cartel Iniciar Sesion o Registrese
         textSize(50)
         fill(250, 230)
@@ -263,18 +266,6 @@ class Presentacion():
         
         
         #Opcion de configuracion en barra lateral
-        if config:
-            tint(117,231,193, 170)
-            fill(117,231,193, 170)
-        else:
-            tint(240,210)
-            fill(240,210)
-        photo = loadImage("settings_icon.png")
-        image(photo, 25, 580)
-        textSize(20)
-        text("Modificar datos", 85, 605)
-        
-        #Opcion de actualizar en barra lateral
         if refresh:
             tint(117,231,193, 170)
             fill(117,231,193, 170)
@@ -282,9 +273,9 @@ class Presentacion():
             tint(240,210)
             fill(240,210)
         photo = loadImage("refresh_icon.png")
-        image(photo, 25, 520)
+        image(photo, 25, 580)
         textSize(20)
-        text("Actualizar", 85, 547)
+        text("Actualizar", 85, 605)
         
         
         #Opcion 1: Mostrar tracks de una playlist en Spotify
@@ -507,6 +498,45 @@ class Presentacion():
             if op == 2 or op == 3 or op == 4:
                 image(youtube_icon, hposition + 680, vposition - 21 + scroll)                
             i+=1
+    
+    def showFavs(self):
+        image(back, 0, 0)
+        with open('data.txt') as json_file:
+            data = json.load(json_file)
+        
+        #Botón de atrás
+        image(back_button, 75 , height/2)
+        tint(255, 230)
+        
+        #Rectángulo Título de Playlist:
+        noStroke()
+        fill(40)
+        rect(200,120 + scroll, width - 400, 100, 20)
+        textSize(50)
+        fill (220, 230)
+        text("Artistas Favoritos: " , 310, 185 + scroll)
+        
+        
+        #Rectangulo negro de fondo
+        noStroke()
+        fill(40)
+        rect(200,250 + scroll, width - 400, len(lista)*50 + 75, 20)
+        
+        #Imprimir Artistas
+        vposition = 300
+        hposition = 350
+        i = 0
+        fill(255)
+        for artist in lista:
+            vposition +=50
+            stroke(70, 240)
+            line(220, vposition + 17 + scroll, width - 240, vposition + 15 + scroll)
+            fill (220, 230)                
+            textSize(18)
+            text(str(i + 1) + ".", hposition - 40, vposition + scroll)
+            text(artist[0:40], hposition, vposition + scroll)
+            image(youtube_icon, hposition + 680, vposition - 21 + scroll)                
+            i+=1
         
         
     def showRecomendaciones(self):
@@ -710,6 +740,7 @@ def setup():
     global youtube_icon
     global back_button
     size (1365, 700)
+    frameRate(20)
     
     youtube_icon = loadImage("youtube_icon.png")
     back_button = loadImage("back_icon.png")
@@ -721,7 +752,7 @@ def setup():
     
 def mouseWheel(event):
     global scroll
-    if estado == 5 or estado == 4 or estado == 6 or estado == 7 or estado == 9:
+    if estado == 5 or estado == 4 or estado == 6 or estado == 7 or estado == 9 or estado == 10:
         if scroll == 0:
             if event.getCount() >=0:
                 scroll -= event.getCount() * 50
@@ -831,6 +862,7 @@ def mousePressed():
             log_in = False
             user = True
             printText()
+
         
         #Resalta borde ingreso Contraseña
         elif mouseX >= 445 and mouseX <=895 and mouseY >=470 and mouseY <= 540:
@@ -841,7 +873,8 @@ def mousePressed():
             
         #Ejecuta .py de validacion del login y cambia estado a 2 (Menu de opciones)
         elif mouseX >= 600 and mouseX <=750 and mouseY >=590 and mouseY <= 640 and len(usuario) > 0 and len(password) > 0:
-            '''estado = 2
+            '''
+            estado = 2
             obtener_artistas()
             obtener_playlist()
             obtener_canciones()
@@ -856,7 +889,6 @@ def mousePressed():
                 obtener_artistas()
                 obtener_playlist()
                 obtener_canciones()
-             
         
         #Cambia estado a Registrarse
         elif mouseX>= 470 and mouseX<= 835 and mouseY>= 545 and mouseY <= 579:
@@ -942,14 +974,20 @@ def mousePressed():
            #os.system("Python Obtener_canciones.py {0}".format(uri))
            op = 3
            estado = 3
+ 
+        #Seleccion Opcion 4 (Artistas Favoritos)    
+        if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 25 and mouseY <= 125) or (mouseX>= 970 and mouseX<= 1140 and mouseY>= 130 and mouseY <= 200):
+            artistasMasEscuchados()
+            estado = 10
+            
     
-        #Selección opción 4 (Buscar canales para los artistas de mis playlist)
+        #Selección opción 5 (Buscar canales para los artistas de mis playlist)
         if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 263 and mouseY <= 348) or (mouseX>= 970 and mouseX<= 1140 and mouseY>= 368 and mouseY <= 438):
             obtener_artistas()
             op = 4
             estado = 7
         
-        #Recomendación de artistas
+        #Seleccion opcion 6 (Recomendación de artistas)
         if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 470 and mouseY <= 563) or (mouseX>= 993 and mouseX<= 1120 and mouseY>= 572 and mouseY <= 620):
             op = 6
             cursor(ARROW)
@@ -963,7 +1001,7 @@ def mousePressed():
             estado = 0
         
         #Actualizar
-        if (mouseX>= 20 and mouseX<= 200 and mouseY>= 520 and mouseY <= 565):
+        if (mouseX>= 20 and mouseX<= 235 and mouseY>= 580 and mouseY <= 625):
             os.system("Python Obtener_canciones.py {0}".format(uri))
             obtener_canciones()
             obtener_artistas()
@@ -1087,6 +1125,24 @@ def mousePressed():
         if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
             estado = 8
             scroll = 0
+            
+    elif estado == 10:
+
+        if mouseX>=1025 and mouseX<=1075:
+            with open('data.txt') as json_file:
+                data = json.load(json_file)  
+            numero = math.ceil((mouseY - scroll + 340)/50) - 13        
+            arg = lista[int(numero)]
+            arg = re.sub('[^a-zA-Z.\d\s]', '', arg)
+            with open('channel.txt', 'w') as outfile:
+                json.dump(arg, outfile)
+            os.system("Python busqueda_canales.py")
+        
+        #Cambia estado a 8 (vuelve hacia atrás)
+        if mouseX>= 75 and mouseX<= 145 and mouseY>= height/2 and mouseY <= height/2 + 70:
+            estado = 2
+            scroll = 0
+
     
     if error_window:
         if (mouseX>= 570 and mouseX<= 770 and  mouseY>= 447 and mouseY<= 467):
@@ -1219,7 +1275,7 @@ def checkMousePosition():
             printText()
             
         #Cambia color boton Registrame
-        if mouseX >= 600 and mouseX <=750 and mouseY >=620 and mouseY <= 660:
+        if mouseX >= 600 and mouseX <=750 and mouseY >=605 and mouseY <= 660:
             sign_up = True
             printText()
         elif estado == 1:
@@ -1258,11 +1314,17 @@ def checkMousePosition():
         elif estado == 2:
             op4 = False
         
-        #Cambia color opcion 6 (Configuración)
+        #Cambia color opcion 6 (Recomendar artistas)
         if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 470 and mouseY <= 577) or (mouseX>= 977 and mouseX<= 1160 and mouseY>= 600 and mouseY <= 660):
             op6 = True
         elif estado == 2:
             op6 = False
+            
+        #Cambia color opcion 
+        if (mouseX>= 1000 and mouseX<= 1103 and mouseY>= 25 and mouseY <= 125) or (mouseX>= 970 and mouseX<= 1140 and mouseY>= 130 and mouseY <= 200):
+            op5 = True
+        elif estado == 2:
+            op5 = False
             
         #Cambia color opcion cerrar sesion
         if (mouseX>= 20 and mouseX<= 220 and mouseY>= 640 and mouseY <= 685):
@@ -1270,17 +1332,12 @@ def checkMousePosition():
         elif estado == 2:
             salir = False
         
-        #Cambia color opcion modficar datos
-        if (mouseX>= 20 and mouseX<= 235 and mouseY>= 580 and mouseY <= 625):
-            config = True
-        elif estado == 2:
-            config = False
-            
         #Cambia color opcion actualizar
-        if (mouseX>= 20 and mouseX<= 200 and mouseY>= 520 and mouseY <= 565):
+        if (mouseX>= 20 and mouseX<= 235 and mouseY>= 580 and mouseY <= 625):
             refresh = True
         elif estado == 2:
             refresh = False
+            
             
         #Cambia cursor de una flecha a una mano
         if op1 or op2 or op3 or op4 or op5 or op6 or salir or config or refresh:
@@ -1307,7 +1364,7 @@ def checkMousePosition():
             cursor(ARROW)
         
             
-    if estado == 4 or estado == 5 or estado == 7 or estado == 9:
+    if estado == 4 or estado == 5 or estado == 7 or estado == 9 or estado == 10:
         
         #Cambia cursor en icono youtube y botón de atrás
         if mouseX>=1025 and mouseX<=1075:
@@ -1336,6 +1393,7 @@ def checkMousePosition():
             cursor(HAND)
         else:
             cursor(ARROW)
+            
             
     if error_window:
         
@@ -1389,8 +1447,6 @@ def obtener_recomendaciones1():
     with open('reco.txt') as json_file:
         reco = json.load(json_file)
     recomendaciones = reco
-    
-    
 
 def busca_index():
     global error_window
@@ -1406,21 +1462,32 @@ def busca_index():
         error_window = True
         return False                
 
-
+def artistasMasEscuchados():
+    global lista
+    lista = []
+    with open('data.txt') as json_file:
+        data = json.load(json_file)
+    for track in data['tracks']:
+        lista.append(track['artist'])
+    listaTuplas = list(Counter(lista).most_common(10))
+    lista = []
+    for i in range(len(listaTuplas)):
+        lista.append(listaTuplas[i][0])
+    
 def draw():
     if estado == 0:
-        checkMousePosition()
+        checkMousePosition()            
         app.login()
     elif estado == 1:
         checkMousePosition()
         app.signup()
     if estado == 2:
-        checkMousePosition()
+        checkMousePosition()            
         app.menu_form()
     if estado == 3:
         checkMousePosition()
         app.showPlaylist()
-    if estado == 4 or estado == 5 or estado == 6:
+    if estado == 4 or estado == 5 or estado == 6:            
         checkMousePosition()
         app.showTracks()
     if estado == 7:
@@ -1432,5 +1499,8 @@ def draw():
     if estado == 9:
         checkMousePosition()
         app.showRecomendaciones()
-        
+    if estado == 10:
+        checkMousePosition()
+        app.showFavs()
+    
     
