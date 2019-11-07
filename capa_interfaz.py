@@ -4,13 +4,6 @@ import sys
 
 accion = sys.argv[1]
 
-'''accion = 'signup'
-usuario = 'bruno@gmail.com'
-password = 'holachau'
-uri = 'bruno98980'
-nombre = 'Mario Ernesto' '''
-
-
 
 if accion == 'login':
     usuario, password = NegocioUser().jsonDataOpen(accion)

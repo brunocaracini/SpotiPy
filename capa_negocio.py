@@ -39,26 +39,12 @@ class NegocioUser(object):
     def jsonDataReturn(self, usuario, password, estado, uri, nombre, accion):
 
         if accion == 'login':
-            '''user_data={
-                'usuario': usuario,
-                'password': password,
-                'estado': estado
-            }
-            with open('user_data.txt', 'w') as outfile:
-                json.dump(user_data, outfile)'''
             user_login_result = estado
             with open('user_login_result.txt', 'w') as outfile:
                 json.dump(user_login_result, outfile)
 
 
         if accion == 'signup':
-            '''user_data_signup={
-            'usuario': usuario,
-            'password': password,
-            'estado': estado,
-            'uri': uri,
-            'nombre': nombre
-            }'''
             user_signup_result = estado
             with open('user_signup_result.txt', 'w') as outfile:
                 json.dump(user_signup_result, outfile)
@@ -93,7 +79,7 @@ class NegocioUser(object):
         '''Da de alta un usuario, se debe validar que el usuario no exista (reglaValidacionLogin),
         que la contraseña pase el min y max de caracteres (reglaLongitudContrasenia) y
         además que el email sea una dirección valida (reglaValidacionEmail).
-        Retorna True si el alta fue exitoso, y se deben levantar excepciones por validaciones no pasadas'''
+        Retorna True si el alta fue exitoso, caso contrario, retorna el error correspondiente.'''
 
         if self.buscarUsuario(email, uri) == 'ok':
             if self.reglaLongitudContrasenia(psw) == False:
@@ -109,8 +95,7 @@ class NegocioUser(object):
 
     def reglaLongitudContrasenia(self, psw):
         '''Validar que la contraseña tenga una longitud entre los valores MIN_CAR_PSW y MAX_CAR_PSW.
-        Retorna un boolean según la condición correspondiente.
-        OJO AGREGAR RAISE EXCEPTION CORRESPONDIENTE'''
+        Retorna un boolean según la condición correspondiente.'''
 
         if (len(psw) >= self.MIN_CAR_PSW) and (len(psw) <= self.MAX_CAR_PSW):
             return True
@@ -120,8 +105,7 @@ class NegocioUser(object):
 
     def reglaValidacionEmail(self, email):
         '''Validar que el mail sea una dirección válida, es decir, que posea el dominio @gmail.com o @hotmail.com.
-        Retorna un boolean según la condición correspondiente.
-        OJO AGREGAR RAISE EXCEPTION CORRESPONDIENTE'''
+        Retorna true si pasa la validación, caso contrario, retorna el error correspondiente'''
 
         if (email.find('@gmail.com') != -1) or (email.find('@hotmail.com') != -1):
             if ((email.find('@') < 3) or (len(email) > 30)):
